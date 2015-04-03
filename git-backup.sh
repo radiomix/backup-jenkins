@@ -5,17 +5,48 @@
 #       https://github.com/luisalima/backup_jenkins_config
 #
 
+#
+# We rsync $JENKINS_HOME to a different directory 
+# and push these files into a git repo
+#
+
 set -e
+
+# get jenkins default variables
+source /etc/default/jenkins
+
+usage() {
+  echo "USAGE: "
+  echo "$0 GIT_REPO GIT_ACCOUNT"
+}
+
+
+syncToBackup() {
+  echo "Syncing $JENKINS_HOME to $BACKUP_DIR"
+  rsync -avHx $JENKINS_HOME $BACKUP_DIR
+}
 
 # Set env var
 GIT_REPO=$1
 GIT_ACCOUNT=$2
 GIT_PASSWORD=$3
+
+if [[ "$GIT_REPO" == "" ]]; then
+  echo "Missing parameter"
+  usage
+fi
+
+
 REPO_NAME=$(basename "$GIT_REPO" ".${GIT_REPO##*.}")
-BACKUP_FILE="Jenkins_Config_$REPO_NAME-backup.xml"
-BACKUP_FILE_RAW="Jenkins_Config_$REPO_NAME-backup-RAW.xml"
+BACKUP_DIR="/var/lib/jenkins-backup/"
 # Time format YYYY-MM-DD
-COMMIT_MESSAGE="Build Configuration Backup for $REPO_NAME $(date +'%F')"
+COMMIT_MESSAGE="Backup for $JENKINS_HOME $(date +'%F')"
+echo GIT_REPO:$GIT_REPO GIT_ACCOUNT:$GIT_ACCOUNT
+echo REPO_NAME:$REPO_NAME BACKUP_DIR:$BACKUP_DIR COMMIT_MESSAGE:$COMMIT_MESSAGE
+echo
+
+
+return
 
 # Remove old repository
 if [ -d $REPO_NAME ]; then
