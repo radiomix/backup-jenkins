@@ -23,29 +23,28 @@ GIT_ACCOUNT=test-account
 GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="build-engeneer@my-company.com"
 
-
 if [[ "$GIT_REPO" == "" ]]; then
-  alert "ERROR: Missing repo "
+  echo_red "ERROR: Missing repo "
   usage
 fi
-
 if [[ "$GIT_ACCOUNT" == "" ]]; then
-  alert "ERROR: Missing parameter"
+  echo_red "ERROR: Missing parameter"
   usage
 fi
 
-BACKUP_DIR="/var/lib/jenkins-backup/"
+BACKUP_DIR="/var/lib/jenkins-backup"
 # Time format YYYY-MM-DD
-COMMIT_MESSAGE="Backup for $JENKINS_HOME $(date +'%F %T')"
-#echo GIT_REPO:$GIT_REPO GIT_ACCOUNT:$GIT_ACCOUNT
-#echo BACKUP_DIR:$BACKUP_DIR COMMIT_MESSAGE:$COMMIT_MESSAGE
-#echo
-
+COMMIT_MESSAGE="\"Backup for $JENKINS_HOME $(date +'%F %T')\""
+echo_blue "Starting to backup Service Jenkins"
 if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
+  echo_green "Stoping Service Jenkins" 
+  echo_green "$(service jenkins stop)"
 # rsync to backup dir 
   syncToBackup
+  echo_green "Starting Service Jenkins" 
+  echo_green "$(service jenkins start)"
 else 
-  alert "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
+  echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
   exit -1 
 fi
 
@@ -55,15 +54,14 @@ date >> date.txt
 set +e
 GIT_STATUS=$(git status -s)
 set -e
-echo $GIT_STATUS
-if  [[ $GIT_STATUS ]]; then
+echo_green $GIT_STATUS 
+if  [[ ! "$GIT_STATUS " == "" ]]; then
 ## pushing it all to the git repo
   gitCommitPUsh
 else 
-  alert "ERROR: Directory $BACKUP_DIR is not under git control!"
-  echo "       Please initialize a git repo in $BACKUP_DIR"
+  echo_red "ERROR: Directory $BACKUP_DIR is not under git control!"
+  echo_blue "Please initialize a git repo in $BACKUP_DIR"
   exit -1 
 fi
-git status
-echo_task "DONE "
+echo_blue "DONE "
 
