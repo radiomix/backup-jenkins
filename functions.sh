@@ -49,8 +49,19 @@ syncToBackup() {
 }
 ## rsync from back directory
 syncFromBackup() {
-  echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
-  echo_green "$(rsync -avHx $BACKUP_DIR $JENKINS_HOME/*)"
+  echo_blue "Starting to restore Service Jenkins"
+  if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
+    echo_green "Stoping Service Jenkins" 
+    echo_green "$(service jenkins stop)"
+    # rsync from backup dir
+    echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
+    echo_green "$(rsync -avHx $BACKUP_DIR/* $JENKINS_HOME)"
+    echo_green "Starting Service Jenkins" 
+    echo_green "$(service jenkins start)"
+  else 
+    echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
+    return -1 
+  fi
 }
 
 ## pushing it all to the git repo
@@ -72,9 +83,21 @@ gitCommitPUsh() {
     echo -ne "${green}"; $(git push --verbose origin master); echo -ne "${nocolor}"
 }
 
-gitCheckoutOldCommit(){
+gitCheckoutCommit(){
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
     echo_green "Showing you recent git commits"
     echo_green "$(git log --oneline)"
+    echo_blue -n "Enter your commit:"
+    read SHA
+    #check if SHA is a valid commit:
+    echo -ne "${blue}"; git  log $SHA; echo -ne "${nocolor}"
+    echo -n "Do you want to revert to the commit $SHA ? [n|Y]"    
+    read input
+    if [[ "$input" == "y" || "$input" == "Y" ]]; then
+      echo_green "Reverting to commit $SHA"
+      git checkout $SHA
+    else
+      echo_green "Keeping it unchanged!"
+    fi
 }
