@@ -6,7 +6,7 @@
 #
 
 #
-# We rsync $JENKINS_HOME to a different directory 
+# We rsync $JENKINS_HOME to BACKUP_DIR directory 
 # and push these files into a git repo
 #
 
