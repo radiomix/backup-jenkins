@@ -39,6 +39,9 @@ syncToBackup() {
 
 ## pushing it all to the git repo
 gitCommitPUsh() {
+    ## add a date file, so we have anything to commit
+    echo $COMMIT_MESSAGE >> backup.log 
+
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
     echo_green "Adding new files to git"

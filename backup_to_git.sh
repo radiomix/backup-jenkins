@@ -34,7 +34,7 @@ fi
 
 BACKUP_DIR="/var/lib/jenkins-backup"
 # Time format YYYY-MM-DD
-COMMIT_MESSAGE="\"Backup for $JENKINS_HOME $(date +'%F %T')\""
+COMMIT_MESSAGE="\"$0 $JENKINS_HOME to $BACKUP_DIR at $(date +'%F %T')\""
 echo_blue "Starting to backup Service Jenkins"
 if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
   echo_green "Stoping Service Jenkins" 
@@ -49,8 +49,6 @@ else
 fi
 
 cd $BACKUP_DIR
-## add a date file, so we have anything to commit
-date >> date.txt
 set +e
 GIT_STATUS=$(git status -s)
 set -e
