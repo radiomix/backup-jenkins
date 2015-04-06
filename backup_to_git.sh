@@ -24,7 +24,7 @@ GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="build-engeneer@my-company.com"
 BACKUP_DIR="/var/lib/jenkins-backup"
 # Time format YYYY-MM-DD
-COMMIT_MESSAGE="\"[$(date)]backup $JENKINS_HOME \""
+COMMIT_MESSAGE="\"[$(date)]backup $JENKINS_HOME on ami $AMI_ID\""
 LOGFILE=$BACKUP_DIR"/backup.log"
 
 
