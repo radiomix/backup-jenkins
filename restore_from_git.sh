@@ -33,8 +33,7 @@ fi
 ## KEEP VARIABLE IN SYNC WITH backup_to_git.sh
 BACKUP_DIR="/var/lib/jenkins-backup"
 # Time format YYYY-MM-DD
-COMMIT_MESSAGE="\"$0 $JENKINS_HOME from $BACKUP_DIR at $(date +'%F %T')\""
-echo_blue "Starting to restore Service Jenkins"
+echo_blue "Starting to restore Service Jenkins on AMI $AMI_ID"
 
 
 cd $BACKUP_DIR
