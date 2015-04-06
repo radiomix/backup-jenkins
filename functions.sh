@@ -3,6 +3,7 @@
 #
 #
 
+export AMI_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id/)
 
 nocolor='\e[0m'
 green='\e[0;32m'
@@ -33,7 +34,7 @@ usage() {
 
 ## rsync to back directory
 syncToBackup() {
-  echo_blue "Starting to backup Service Jenkins"
+  echo_blue "Starting to backup Service Jenkins on AMI $AMI_ID"
   if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
     echo_green "Stoping Service Jenkins" 
     echo_green "$(service jenkins stop)"
@@ -49,7 +50,7 @@ syncToBackup() {
 }
 ## rsync from back directory
 syncFromBackup() {
-  echo_blue "Starting to restore Service Jenkins"
+  echo_blue "Starting to restore Service Jenkins on AMI $AMI_ID"
   if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
     echo_green "Stoping Service Jenkins" 
     echo_green "$(service jenkins stop)"
