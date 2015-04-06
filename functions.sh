@@ -86,18 +86,27 @@ gitCommitPUsh() {
 gitCheckoutCommit(){
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
-    echo_green "Showing you recent git commits"
-    echo_green "$(git log --oneline)"
-    echo_blue -n "Enter your commit:"
+    echo_green "Showing you available git commits"
+    echo; git  log --oneline; echo
+    echo -n "Enter your commit: "
     read SHA
     #check if SHA is a valid commit:
-    echo -ne "${blue}"; git  log $SHA; echo -ne "${nocolor}"
-    echo -n "Do you want to revert to the commit $SHA ? [n|Y]"    
-    read input
-    if [[ "$input" == "y" || "$input" == "Y" ]]; then
-      echo_green "Reverting to commit $SHA"
-      git checkout $SHA
+    set +e
+    gitlog=$(git log $SHA)
+    set +e
+    if [[ ! "$gitlog" == "" ]]; then
+      echo -e "${blue}"; git  log $SHA -1; echo -ne "${nocolor}"
+      echo -n "Do you want to revert to the commit $SHA ? [n|Y]"    
+      read input
+      if [[ "$input" == "y" || "$input" == "Y" ]]; then
+        echo_green "Reverting to commit $SHA"
+        git checkout $SHA
+      else
+        echo_blue "Keeping it unchanged!"
+        exit -1
+      fi
     else
-      echo_green "Keeping it unchanged!"
+      echo_red "ERROR: $SHA is not a correct git commit!"
+      exit -1
     fi
 }
