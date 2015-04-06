@@ -22,6 +22,11 @@ GIT_REPO=test-repo
 GIT_ACCOUNT=test-account
 GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="build-engeneer@my-company.com"
+BACKUP_DIR="/var/lib/jenkins-backup"
+# Time format YYYY-MM-DD
+COMMIT_MESSAGE="\"$0 $JENKINS_HOME to $BACKUP_DIR at $(date +'%F %T')\""
+LOGFILE=$BACKUP_DIR"/backup.log"
+
 
 if [[ "$GIT_REPO" == "" ]]; then
   echo_red "ERROR: Missing repo "
@@ -32,22 +37,10 @@ if [[ "$GIT_ACCOUNT" == "" ]]; then
   usage
 fi
 
-BACKUP_DIR="/var/lib/jenkins-backup"
-# Time format YYYY-MM-DD
-COMMIT_MESSAGE="\"$0 $JENKINS_HOME to $BACKUP_DIR at $(date +'%F %T')\""
-echo_blue "Starting to backup Service Jenkins"
-if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
-  echo_green "Stoping Service Jenkins" 
-  echo_green "$(service jenkins stop)"
 # rsync to backup dir 
-  syncToBackup
-  echo_green "Starting Service Jenkins" 
-  echo_green "$(service jenkins start)"
-else 
-  echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
-  exit -1 
-fi
+syncToBackup
 
+# git work
 cd $BACKUP_DIR
 set +e
 GIT_STATUS=$(git status -s)

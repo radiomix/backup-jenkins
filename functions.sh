@@ -33,14 +33,30 @@ usage() {
 
 ## rsync to back directory
 syncToBackup() {
-  echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-  echo_green "$(rsync -avHx $JENKINS_HOME/* $BACKUP_DIR)"
+  echo_blue "Starting to backup Service Jenkins"
+  if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
+    echo_green "Stoping Service Jenkins" 
+    echo_green "$(service jenkins stop)"
+    # rsync to backup dir 
+    echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
+    echo_green "$(rsync -avHx $JENKINS_HOME/* $BACKUP_DIR)"
+    echo_green "Starting Service Jenkins" 
+    echo_green "$(service jenkins start)"
+  else 
+    echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
+    return -1 
+  fi
+}
+## rsync from back directory
+syncFromBackup() {
+  echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
+  echo_green "$(rsync -avHx $BACKUP_DIR $JENKINS_HOME/*)"
 }
 
 ## pushing it all to the git repo
 gitCommitPUsh() {
     ## add a date file, so we have anything to commit
-    echo $COMMIT_MESSAGE >> backup.log 
+    echo $COMMIT_MESSAGE >> $LOGFILE
 
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
@@ -54,4 +70,11 @@ gitCommitPUsh() {
 
     echo_green "Pushing into master git"
     echo -ne "${green}"; $(git push --verbose origin master); echo -ne "${nocolor}"
+}
+
+gitCheckoutOldCommit(){
+    git config --global user.name "$GIT_USER"
+    git config --global user.email "$GIT_EMAIL"
+    echo_green "Showing you recent git commits"
+    echo_green "$(git log --oneline)"
 }
