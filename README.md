@@ -7,10 +7,10 @@ an old commit into `BACKUP_DIR` and `rsync` this with `JENKINS_HOME`.
 
 ## What it does?
  - sync the jenkins home directory into a backup directory
- - add the current date to file `date.txt` 
  - adds new files to git
  - commit new files
  - push delta into git repo 
+ - add the action to file `backup.log` in `JENKINS_LOG` directory
 
 ## Variables
  - `JENKINS_HOME` jenkins home directory, set in `/etc/default/jenkins`
@@ -27,12 +27,12 @@ We assume a working git repo in `BACKUP_DIR` and
 
 To backup Jenkins, type:
 ```sh
-sudo -u jenkins ./backup_to_git.sh
+./backup_to_git.sh
 ```
 
 To restore Jenkins, type:
 ```sh
-sudo -u jenkins ./restore_from_git.sh
+./restore_from_git.sh
 ```
 
 ### Sources

@@ -22,10 +22,7 @@ GIT_REPO=test-repo
 GIT_ACCOUNT=test-account
 GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="build-engeneer@my-company.com"
-BACKUP_DIR="/var/lib/jenkins-backup"
-# Time format YYYY-MM-DD
 COMMIT_MESSAGE="\"[$(date)]backup $JENKINS_HOME on ami $AMI_ID\""
-LOGFILE=$BACKUP_DIR"/backup.log"
 
 
 if [[ "$GIT_REPO" == "" ]]; then
@@ -43,10 +40,12 @@ syncToBackup
 # git work
 cd $BACKUP_DIR
 set +e
-GIT_STATUS=$(git status -s)
+GIT_STATUS=$($gitu status -s)
 set -e
 echo_green $GIT_STATUS 
 if  [[ ! "$GIT_STATUS " == "" ]]; then
+## write commit as user jenkins into log file
+  echo $COMMIT_MESSAGE | sudo -u $JENKINS_USER tee -a $LOGFILE >/dev/null
 ## pushing it all to the git repo
   gitCommitPUsh
 else 

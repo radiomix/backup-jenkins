@@ -30,20 +30,20 @@ if [[ "$GIT_ACCOUNT" == "" ]]; then
   usage
 fi
 
-## KEEP VARIABLE IN SYNC WITH backup_to_git.sh
-BACKUP_DIR="/var/lib/jenkins-backup"
-# Time format YYYY-MM-DD
 echo_blue "Starting to restore Service Jenkins on AMI $AMI_ID"
 
 
 cd $BACKUP_DIR
 set +e
-GIT_STATUS=$(git status -s)
+GIT_STATUS=$($gitu status -s)
 set -e
 echo_green $GIT_STATUS 
 if  [[ ! "$GIT_STATUS " == "" ]]; then
 ## pushing it all to the git repo
   gitCheckoutCommit
+  COMMIT_MESSAGE="\"[$(date)]restore $JENKINS_HOME with commit $COMMIT_SHA on ami $AMI_ID\""
+## write commit is user jenkins into log message
+  echo $COMMIT_MESSAGE | sudo -u $JENKINS_USER tee -a $LOGFILE >/dev/null
 else 
   echo_red "ERROR: Directory $BACKUP_DIR is not under git control!"
   echo_blue "Please initialize a git repo in $BACKUP_DIR"

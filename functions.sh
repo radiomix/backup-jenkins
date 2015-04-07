@@ -1,27 +1,40 @@
 #!/bin/bash
 #
-#
-#
 
+
+##
+## for testing purpose, we let ubuntu do the git work,
+## because ubuntu does have the credentials
+#gitu='sudo -u ubuntu git '
+# if user jenkins has got the crendentials, out comment next line
+gitu="sudo -u $JENKINS_USER git "
+
+# AMI id
 export AMI_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id/)
 
+# log file, base dir from /etc/default/jenkins
+LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
+
+# backup directory
+BACKUP_DIR="/var/lib/jenkins-backup"
+
+## colors
 nocolor='\e[0m'
 green='\e[0;32m'
 red='\e[0;31m'
 blue='\e[0;34m'
 
 # echo in green
-function echo_green() {
-    echo -e "${green}[$(date)] $@ ${nocolor}"
+function echo_green() { 
+  echo -e "${green}[$(date)] $@ ${nocolor}" 
 }
-
 #echo in blue
-function echo_blue() {
-    echo -e "${blue}[$(date)] $@ ${nocolor}"
+function echo_blue() { 
+  echo -e "${blue}[$(date)] $@ ${nocolor}" 
 }
 #echo in red
-function echo_red() {
-    echo -e "${red}[$(date)] $@ ${nocolor}"
+function echo_red() { 
+  echo -e "${red}[$(date)] $@ ${nocolor}" 
 }
 
 
@@ -41,12 +54,12 @@ syncToBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' $JENKINS_HOME/ $BACKUP_DIR )"
+    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' $JENKINS_HOME/ $BACKUP_DIR )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
     echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
-    return -1 
+    return [-1] 
   fi
 }
 ## rsync from back directory
@@ -58,30 +71,28 @@ syncFromBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
-    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' $BACKUP_DIR/ $JENKINS_HOME )"
+    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' $BACKUP_DIR/ $JENKINS_HOME )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
     echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
-    return -1 
+    return [-1] 
   fi
 }
 
 ## push changes in backup dir to git repo
 gitCommitPUsh() {
-    ## add a date file, so we have anything to commit
-    echo $COMMIT_MESSAGE >> $LOGFILE
-    git config --global user.name "$GIT_USER"
-    git config --global user.email "$GIT_EMAIL"
     echo_green "Adding new files to git"
-    echo -ne "${green}"; git  add --verbose  --all . ; echo -ne "${nocolor}"
-    ### commit message must be quoted with double quotes, otherwise: ERROR! fatal  
+    #echo -ne "${green}"; $gitu add --verbose  --all .; echo -ne "${nocolor}"
+    $gitu add --verbose  --all .
     echo_green "Commiting into local git $(pwd)"
-    echo -ne "${green}"
-    git commit --verbose -m "$COMMIT_MESSAGE"
-    echo -ne "${nocolor}"
-    echo_green "Pushing into master git"
-    echo -ne "${green}"; $(git push --verbose origin master); echo -ne "${nocolor}"
+    ### commit message must be quoted with double quotes, otherwise: ERROR! fatal  
+    echo -ne "${green}"; $gitu commit --verbose -m "$COMMIT_MESSAGE"; echo -ne "${nocolor}"
+    #set +e #in case there is nothing to commit!
+    #$gitu commit --verbose -m "$COMMIT_MESSAGE" 
+    #set +e
+    echo_green "Pushing into remote git"
+    echo -ne "${green}"; $($gitu push --verbose origin master); echo -ne "${nocolor}"
 }
 
 ## show commits, let user input a commit, check it out and 
@@ -101,7 +112,8 @@ gitCheckoutCommit(){
       read input
       if [[ "$input" == "y" || "$input" == "Y" ]]; then
         echo_green "Reverting to commit $SHA"
-        git checkout $SHA
+        export COMMIT_SHA=$SHA
+        $gitu checkout $SHA
       else
         echo_blue "Keeping it unchanged!"
         exit -1
