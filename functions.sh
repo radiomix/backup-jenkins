@@ -35,14 +35,13 @@ usage() {
 ## rsync to back directory
 syncToBackup() {
   echo_blue "Starting to backup Service Jenkins on AMI $AMI_ID"
-  if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
+  user=$(stat -c %U $BACKUP_DIR) #check ownership of backup dir
+  if [[ -d $BACKUP_DIR && "$user" == "$JENKINS_USER" ]]; then #test write permission
     echo_green "Stoping Service Jenkins" 
     echo_green "$(service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-    echo_green "$(rsync -avHx $JENKINS_HOME/* $BACKUP_DIR)"
-    echo_green "Syncing $JENKINS_HOME hidden files to $BACKUP_DIR"
-    echo_green "$(rsync -avHx $JENKINS_HOME/.??* $BACKUP_DIR)"
+    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' $JENKINS_HOME/ $BACKUP_DIR)"
     echo_green "Starting Service Jenkins" 
     echo_green "$(service jenkins start)"
   else 
@@ -53,14 +52,13 @@ syncToBackup() {
 ## rsync from back directory
 syncFromBackup() {
   echo_blue "Starting to restore Service Jenkins on AMI $AMI_ID"
-  if [[ -d $BACKUP_DIR && -O $BACKUP_DIR ]]; then
-    echo_green "Stoping Service Jenkins" 
+  user=$(stat -c %U $BACKUP_DIR) #check ownership of backup dir
+  if [[ -d $BACKUP_DIR && "$user" == "$JENKINS_USER" ]]; then #test write permission
+	    echo_green "Stoping Service Jenkins" 
     echo_green "$(service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
-    echo_green "$(rsync -avHx $BACKUP_DIR/* $JENKINS_HOME)"
-    echo_green "Syncing $JENKINS_HOME hidden files from $BACKUP_DIR"
-    echo_green "$(rsync -avHx --exclude '*.git' $BACKUP_DIR/.??* $JENKINS_HOME )"
+    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' $BACKUP_DIR/ $JENKINS_HOME )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(service jenkins start)"
   else 
@@ -77,7 +75,8 @@ gitCommitPUsh() {
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
     echo_green "Adding new files to git"
-    echo -ne "${green}"; git  add --verbose  --all $BACKUP_DIR/; echo -ne "${nocolor}"
+    #echo -ne "${green}"; git  add --verbose  --all $BACKUP_DIR/; echo -ne "${nocolor}"
+    echo -ne "${green}"; git  add --verbose  --all . ; echo -ne "${nocolor}"
     ### commit message must be quoted with double quotes, otherwise: ERROR! fatal  
     echo_green "Commiting into local git $(pwd)"
     echo -ne "${green}"
