@@ -41,7 +41,7 @@ syncToBackup() {
     echo_green "$(service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' $JENKINS_HOME/ $BACKUP_DIR)"
+    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' $JENKINS_HOME/ $BACKUP_DIR )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(service jenkins start)"
   else 
