@@ -28,11 +28,11 @@ We assume a working git repo in `BACKUP_DIR` and
 To backup Jenkins, type:
 ```sh
 sudo -u jenkins ./backup_to_git.sh
+```
 
 To restore Jenkins, type:
 ```sh
 sudo -u jenkins ./restore_from_git.sh
-```
 ```
 
 ### Sources
