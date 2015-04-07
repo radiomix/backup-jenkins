@@ -1,6 +1,8 @@
 # Backup Script for Jenkins
-We backup the jenkins home directory `$JENKINS_HOME` by syncing it to 
-a backup directory and pushing the diffs into a git repository.
+We backup `JENKINS_HOME` by syncing it to 
+`BACKUP_DIR` and pushing the diffs into a git repository. 
+We restore an older version of `JENKINS_HOME` by checking out
+an old commit into `BACKUP_DIR` and `rsync` this with `JENKINS_HOME`. 
 
 
 ## What it does?
@@ -18,9 +20,19 @@ a backup directory and pushing the diffs into a git repository.
  - `COMMIT_MESSAGE` 
 
 ## Usage
+### Prerequesites
+We assume a working git repo in `BACKUP_DIR` and
+ - user `jenkins` to have credentials to write to `BACKUP_DIR` 
+ - user `jenkins` to have credentials to pull/push the local git repo in `BACKUP_DIR`
 
+To backup Jenkins, type:
 ```sh
-sudo ./backup_to_git.sh
+sudo -u jenkins ./backup_to_git.sh
+
+To restore Jenkins, type:
+```sh
+sudo -u jenkins ./restore_from_git.sh
+```
 ```
 
 ### Sources
@@ -30,5 +42,12 @@ The orginal idea is from
 
 
 ### Files
-- functions.sh provides functions 
-- backup_to_git.sh does `rsync` from `JENKINS_HOME` to `BACKUP_DIR` and pushes new files into the git repo
+- **functions.sh** provides functions 
+- **backup_to_git.sh** 
+  * `rsync` from `JENKINS_HOME` to `BACKUP_DIR` 
+  * push new files into the git repo
+- **restore_from_git.sh** 
+  * show recent commits 
+  * let user select a commit 
+  * check out this commit into the backup directory
+  * `rsync` from `BACKUP_DIR` to `JENKINS_HOME`
