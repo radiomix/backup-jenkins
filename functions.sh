@@ -41,6 +41,8 @@ syncToBackup() {
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
     echo_green "$(rsync -avHx $JENKINS_HOME/* $BACKUP_DIR)"
+    echo_green "Syncing $JENKINS_HOME hidden files to $BACKUP_DIR"
+    echo_green "$(rsync -avHx $JENKINS_HOME/.??* $BACKUP_DIR)"
     echo_green "Starting Service Jenkins" 
     echo_green "$(service jenkins start)"
   else 
@@ -57,6 +59,8 @@ syncFromBackup() {
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
     echo_green "$(rsync -avHx $BACKUP_DIR/* $JENKINS_HOME)"
+    echo_green "Syncing $JENKINS_HOME hidden files from $BACKUP_DIR"
+    echo_green "$(rsync -avHx --exclude '*.git' $BACKUP_DIR/.??* $JENKINS_HOME )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(service jenkins start)"
   else 
