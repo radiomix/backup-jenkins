@@ -71,18 +71,15 @@ syncFromBackup() {
 gitCommitPUsh() {
     ## add a date file, so we have anything to commit
     echo $COMMIT_MESSAGE >> $LOGFILE
-
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
     echo_green "Adding new files to git"
-    #echo -ne "${green}"; git  add --verbose  --all $BACKUP_DIR/; echo -ne "${nocolor}"
     echo -ne "${green}"; git  add --verbose  --all . ; echo -ne "${nocolor}"
     ### commit message must be quoted with double quotes, otherwise: ERROR! fatal  
     echo_green "Commiting into local git $(pwd)"
     echo -ne "${green}"
     git commit --verbose -m "$COMMIT_MESSAGE"
     echo -ne "${nocolor}"
-
     echo_green "Pushing into master git"
     echo -ne "${green}"; $(git push --verbose origin master); echo -ne "${nocolor}"
 }
@@ -91,7 +88,7 @@ gitCheckoutCommit(){
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
     echo_green "Showing you available git commits"
-    echo; git  log --oneline; echo
+    echo; git  log --oneline| more -7; echo
     echo -n "Enter your commit: "
     read SHA
     #check if SHA is a valid commit:
