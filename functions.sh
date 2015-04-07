@@ -38,12 +38,12 @@ syncToBackup() {
   user=$(stat -c %U $BACKUP_DIR) #check ownership of backup dir
   if [[ -d $BACKUP_DIR && "$user" == "$JENKINS_USER" ]]; then #test write permission
     echo_green "Stoping Service Jenkins" 
-    echo_green "$(service jenkins stop)"
+    echo_green "$(sudo service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
     echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' $JENKINS_HOME/ $BACKUP_DIR )"
     echo_green "Starting Service Jenkins" 
-    echo_green "$(service jenkins start)"
+    echo_green "$(sudo service jenkins start)"
   else 
     echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
     return -1 
@@ -54,20 +54,20 @@ syncFromBackup() {
   echo_blue "Starting to restore Service Jenkins on AMI $AMI_ID"
   user=$(stat -c %U $BACKUP_DIR) #check ownership of backup dir
   if [[ -d $BACKUP_DIR && "$user" == "$JENKINS_USER" ]]; then #test write permission
-	    echo_green "Stoping Service Jenkins" 
-    echo_green "$(service jenkins stop)"
+    echo_green "Stoping Service Jenkins" 
+    echo_green "$(sudo service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
     echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' $BACKUP_DIR/ $JENKINS_HOME )"
     echo_green "Starting Service Jenkins" 
-    echo_green "$(service jenkins start)"
+    echo_green "$(sudo service jenkins start)"
   else 
     echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
     return -1 
   fi
 }
 
-## pushing it all to the git repo
+## push changes in backup dir to git repo
 gitCommitPUsh() {
     ## add a date file, so we have anything to commit
     echo $COMMIT_MESSAGE >> $LOGFILE
@@ -84,9 +84,9 @@ gitCommitPUsh() {
     echo -ne "${green}"; $(git push --verbose origin master); echo -ne "${nocolor}"
 }
 
+## show commits, let user input a commit, check it out and 
+## rsync it from backup dir to jenkins home dir 
 gitCheckoutCommit(){
-    git config --global user.name "$GIT_USER"
-    git config --global user.email "$GIT_EMAIL"
     echo_green "Showing you available git commits"
     echo; git  log --oneline| more -7; echo
     echo -n "Enter your commit: "
