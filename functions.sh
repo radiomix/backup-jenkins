@@ -83,14 +83,10 @@ syncFromBackup() {
 ## push changes in backup dir to git repo
 gitCommitPUsh() {
     echo_green "Adding new files to git"
-    #echo -ne "${green}"; $gitu add --verbose  --all .; echo -ne "${nocolor}"
     $gitu add --verbose  --all .
     echo_green "Commiting into local git $(pwd)"
     ### commit message must be quoted with double quotes, otherwise: ERROR! fatal  
     echo -ne "${green}"; $gitu commit --verbose -m "$COMMIT_MESSAGE"; echo -ne "${nocolor}"
-    #set +e #in case there is nothing to commit!
-    #$gitu commit --verbose -m "$COMMIT_MESSAGE" 
-    #set +e
     echo_green "Pushing into remote git"
     echo -ne "${green}"; $($gitu push --verbose origin master); echo -ne "${nocolor}"
 }
