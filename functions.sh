@@ -54,7 +54,7 @@ syncToBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' $JENKINS_HOME/ $BACKUP_DIR )"
+    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $JENKINS_HOME/ $BACKUP_DIR )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
@@ -71,7 +71,7 @@ syncFromBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
-    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' $BACKUP_DIR/ $JENKINS_HOME )"
+    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $BACKUP_DIR/ $JENKINS_HOME )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
