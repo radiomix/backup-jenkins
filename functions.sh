@@ -123,3 +123,9 @@ gitCheckoutCommit(){
       exit -1
     fi
 }
+
+## check out master again to be ok with remote git repo
+gitCheckoutMaster() {
+    echo_green "Checking out master again"
+    $gitu checkout master
+}
