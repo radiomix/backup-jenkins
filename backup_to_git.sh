@@ -15,7 +15,7 @@ set -euo pipefail
 
 # get jenkins default variables
 source /etc/default/jenkins
-source functions.sh
+source $(dirname $0)/functions.sh
 
 # Set script parameter
 GIT_REPO=test-repo
