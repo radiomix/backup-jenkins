@@ -52,5 +52,9 @@ fi
 
 # rsync from backup dir 
 syncFromBackup
+
+# cleanup backup dir to point to master
+cd $BACKUP_DIR
+gitCheckoutMaster
 echo_blue "DONE "
 
