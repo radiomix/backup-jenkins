@@ -22,8 +22,9 @@ GIT_REPO=test-repo
 GIT_ACCOUNT=test-account
 GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="build-engeneer@my-company.com"
-COMMIT_MESSAGE="\"[$(date)]backup $JENKINS_HOME on ami $AMI_ID\""
-
+set +u
+COMMIT_MESSAGE="\"[$(date)]'$1':backup $JENKINS_HOME on ami $AMI_ID \""
+set -u
 
 if [[ "$GIT_REPO" == "" ]]; then
   echo_red "ERROR: Missing repo "
