@@ -22,17 +22,18 @@ an old commit into `BACKUP_DIR` and `rsync` this with `JENKINS_HOME`.
 ## Usage
 ### Prerequesites
 We assume a working git repo in `BACKUP_DIR` and
- - user `jenkins` to have credentials to write to `BACKUP_DIR` 
- - user `jenkins` to have credentials to pull/push the local git repo in `BACKUP_DIR`
+ - user `jenkins` to have credentials to *write to `BACKUP_DIR`* 
+ - user `jenkins` to have credentials to *pull/push the local git repo in `BACKUP_DIR`*
+ - user `jenkins` can *start/restart service jenkins*
 
 To backup Jenkins, type:
 ```sh
-./backup_to_git.sh
+sudo -u jenkins /path/to/backup_to_git.sh
 ```
 
 To restore Jenkins, type:
 ```sh
-./restore_from_git.sh
+sudo -u jenkins /restore_from_git.sh
 ```
 
 ### Sources
