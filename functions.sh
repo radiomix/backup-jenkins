@@ -51,12 +51,12 @@ syncToBackup() {
   user=$(stat -c %U $BACKUP_DIR) #check ownership of backup dir
   if [[ -d $BACKUP_DIR && "$user" == "$JENKINS_USER" ]]; then #test write permission
     echo_green "Stoping Service Jenkins" 
-    echo_green "$(sudo -u $JENKINS_USER service jenkins stop)"
+    echo_green "$(sudo service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
     echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $JENKINS_HOME/ $BACKUP_DIR )"
     echo_green "Starting Service Jenkins" 
-    echo_green "$(sudo -u $JENKINS_USER service jenkins start)"
+    echo_green "$(sudo service jenkins start)"
   else 
     echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
     return [-1] 
@@ -68,12 +68,12 @@ syncFromBackup() {
   user=$(stat -c %U $BACKUP_DIR) #check ownership of backup dir
   if [[ -d $BACKUP_DIR && "$user" == "$JENKINS_USER" ]]; then #test write permission
     echo_green "Stoping Service Jenkins" 
-    echo_green "$(sudo -u $JENKINS_USER service jenkins stop)"
+    echo_green "$(sudo service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
     echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $BACKUP_DIR/ $JENKINS_HOME )"
     echo_green "Starting Service Jenkins" 
-    echo_green "$(sudo -u $JENKINS_USER service jenkins start)"
+    echo_green "$(sudo service jenkins start)"
   else 
     echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
     return [-1] 
