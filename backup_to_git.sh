@@ -40,7 +40,7 @@ syncToBackup
 # git work
 cd $BACKUP_DIR
 set +e
-GIT_STATUS=$($gitu status -s)
+GIT_STATUS=$(git status -s)
 set -e
 echo_green $GIT_STATUS 
 if  [[ ! "$GIT_STATUS " == "" ]]; then

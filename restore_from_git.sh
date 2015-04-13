@@ -35,7 +35,7 @@ echo_blue "Starting to restore Service Jenkins on AMI $AMI_ID"
 
 cd $BACKUP_DIR
 set +e
-GIT_STATUS=$($gitu status -s)
+GIT_STATUS=$(git status -s)
 set -e
 echo_green $GIT_STATUS 
 if  [[ ! "$GIT_STATUS " == "" ]]; then
