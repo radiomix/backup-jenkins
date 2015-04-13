@@ -23,7 +23,7 @@ GIT_ACCOUNT=test-account
 GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="build-engeneer@my-company.com"
 set +u
-COMMIT_MESSAGE="\"[$(date)]'$1':backup $JENKINS_HOME on ami $AMI_ID \""
+COMMIT_MESSAGE="\"[$(date)]'$1': backup $JENKINS_HOME on ami $AMI_ID \""
 set -u
 
 if [[ "$GIT_REPO" == "" ]]; then

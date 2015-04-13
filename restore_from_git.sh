@@ -41,7 +41,7 @@ echo_green $GIT_STATUS
 if  [[ ! "$GIT_STATUS " == "" ]]; then
 ## pushing it all to the git repo
   gitCheckoutCommit
-  COMMIT_MESSAGE="\"[$(date)]restore $JENKINS_HOME with commit $COMMIT_SHA on ami $AMI_ID\""
+  COMMIT_MESSAGE="\"[$(date)]'$COMMIT_SHA': restore $JENKINS_HOME on ami $AMI_ID\""
 ## write commit is user jenkins into log message
   echo $COMMIT_MESSAGE | sudo -u $JENKINS_USER tee -a $LOGFILE >/dev/null
 else 
