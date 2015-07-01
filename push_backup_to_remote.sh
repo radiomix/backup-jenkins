@@ -47,5 +47,5 @@ else
   echo_blue "Please initialize a git repo in $BACKUP_DIR"
   exit -1 
 fi
-echo_blue "DONE "
+echo_blue "DONE $0"
 
