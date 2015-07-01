@@ -1,6 +1,13 @@
 #!/bin/bash
 #
 
+## common parameters/settings
+# Set script parameter
+GIT_REPO=test-repo
+GIT_ACCOUNT=test-account
+GIT_USER="Jenkins Backup Script"
+GIT_EMAIL="mkl@im7.de"
+
 
 ##
 ## for testing purpose, we let ubuntu do the git work,
@@ -80,13 +87,17 @@ syncFromBackup() {
   fi
 }
 
-## push changes in backup dir to git repo
-gitCommitPUsh() {
+## commit changes in backup dir to git repo
+gitCommit() {
     echo_green "Adding new files to git"
     $gitu add --verbose  --all .
     echo_green "Commiting into local git $(pwd)"
     ### commit message must be quoted with double quotes, otherwise: ERROR! fatal  
     echo -ne "${green}"; $gitu commit --verbose -m "$COMMIT_MESSAGE"; echo -ne "${nocolor}"
+}
+
+## push changes in backup dir to remote git repo
+gitPush() {
     echo_green "Pushing into remote git"
     echo -ne "${green}"; $($gitu push --verbose origin master); echo -ne "${nocolor}"
 }

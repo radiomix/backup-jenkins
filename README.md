@@ -46,7 +46,9 @@ The orginal idea is from
 - **functions.sh** provides functions 
 - **backup_to_git.sh** 
   * `rsync` from `JENKINS_HOME` to `BACKUP_DIR` 
-  * push new files into the git repo
+  * commit new files into the git repo
+- **push_backup_to_remote.sh** 
+  * push commits into the remote git repo
 - **restore_from_git.sh** 
   * show recent commits 
   * let user select a commit 

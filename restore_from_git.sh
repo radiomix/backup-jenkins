@@ -15,11 +15,6 @@ set -euo pipefail
 source /etc/default/jenkins
 source $(dirname $0)/functions.sh
 
-# Set script parameter
-GIT_REPO=test-repo
-GIT_ACCOUNT=test-account
-GIT_USER="Jenkins Backup Script"
-GIT_EMAIL="build-engeneer@my-company.com"
 
 if [[ "$GIT_REPO" == "" ]]; then
   echo_red "ERROR: Missing repo "

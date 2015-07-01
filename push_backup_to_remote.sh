@@ -18,7 +18,7 @@ source /etc/default/jenkins
 source $(dirname $0)/functions.sh
 
 set +u
-COMMIT_MESSAGE="\"[$(date)]'$1': backup $JENKINS_HOME on ami $AMI_ID \""
+COMMIT_MESSAGE="\"[$(date)]'$1': push $JENKINS_HOME on ami $AMI_ID to remote\""
 set -u
 
 if [[ "$GIT_REPO" == "" ]]; then
@@ -30,8 +30,6 @@ if [[ "$GIT_ACCOUNT" == "" ]]; then
   usage
 fi
 
-# rsync to backup dir 
-syncToBackup
 
 # git work
 cd $BACKUP_DIR
@@ -40,10 +38,10 @@ GIT_STATUS=$(git status -s)
 set -e
 echo_green $GIT_STATUS 
 if  [[ ! "$GIT_STATUS " == "" ]]; then
-## write commit as user jenkins into log file
+## push as user jenkins into log file
   echo $COMMIT_MESSAGE | sudo -u $JENKINS_USER tee -a $LOGFILE >/dev/null
 ## pushing it all to the git repo
-  gitCommit
+  gitPush
 else 
   echo_red "ERROR: Directory $BACKUP_DIR is not under git control!"
   echo_blue "Please initialize a git repo in $BACKUP_DIR"
