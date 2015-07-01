@@ -42,6 +42,7 @@ if  [[ ! "$GIT_STATUS " == "" ]]; then
 else 
   echo_red "ERROR: Directory $BACKUP_DIR is not under git control!"
   echo_blue "Please initialize a git repo in $BACKUP_DIR"
+  echo -ne "${nocolor}"
   exit -1 
 fi
 
@@ -52,4 +53,5 @@ syncFromBackup
 cd $BACKUP_DIR
 gitCheckoutMaster
 echo_blue "DONE "
+echo -ne "${nocolor}"
 

@@ -12,15 +12,16 @@ GIT_EMAIL="mkl@im7.de"
 ##
 ## for testing purpose, we let ubuntu do the git work,
 ## because ubuntu does have the credentials
-#gitu='sudo -u ubuntu git '
+gitu='sudo -u ubuntu git '
 # if user jenkins has got the crendentials, out comment next line
-gitu="sudo -u $JENKINS_USER git "
+#gitu="sudo -u $JENKINS_USER git "
 
 # AMI id
 export AMI_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id/)
 
 # log file, base dir from /etc/default/jenkins
 LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
+echo_green "LOOGING TO $LOGFILE"
 
 # backup directory
 BACKUP_DIR="/var/lib/jenkins-backup"
@@ -56,16 +57,17 @@ usage() {
 syncToBackup() {
   echo_blue "Starting to backup Service Jenkins on AMI $AMI_ID"
   user=$(stat -c %U $BACKUP_DIR) #check ownership of backup dir
-  if [[ -d $BACKUP_DIR && "$user" == "$JENKINS_USER" ]]; then #test write permission
+  if [[ -d $BACKUP_DIR  ]]; then #test write permission
     echo_green "Stoping Service Jenkins" 
     echo_green "$(sudo service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $JENKINS_HOME/ $BACKUP_DIR )"
+    echo_green "$(sudo rsync -avHx --chown=ubuntu:ubuntu --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $JENKINS_HOME/ $BACKUP_DIR )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
     echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
+    echo -ne "${nocolor}"
     return [-1] 
   fi
 }
@@ -73,16 +75,17 @@ syncToBackup() {
 syncFromBackup() {
   echo_blue "Starting to restore Service Jenkins on AMI $AMI_ID"
   user=$(stat -c %U $BACKUP_DIR) #check ownership of backup dir
-  if [[ -d $BACKUP_DIR && "$user" == "$JENKINS_USER" ]]; then #test write permission
+  if [[ -d $BACKUP_DIR ]]; then #test write permission
     echo_green "Stoping Service Jenkins" 
     echo_green "$(sudo service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
-    echo_green "$(sudo -u $JENKINS_USER rsync -avHx --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $BACKUP_DIR/ $JENKINS_HOME )"
+    echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $BACKUP_DIR/ $JENKINS_HOME )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
     echo_red "ERROR: Directory $BACKUP_DIR does not exist or is not writable!"
+    echo -ne "${nocolor}"
     return [-1] 
   fi
 }
@@ -123,10 +126,12 @@ gitCheckoutCommit(){
         $gitu checkout $SHA
       else
         echo_blue "Keeping it unchanged!"
+        echo -ne "${nocolor}"
         exit -1
       fi
     else
       echo_red "ERROR: $SHA is not a correct git commit!"
+      echo -ne "${nocolor}"
       exit -1
     fi
 }
