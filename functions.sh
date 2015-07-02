@@ -21,16 +21,46 @@ export AMI_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id/)
 
 # log file, base dir from /etc/default/jenkins
 LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
-echo "LOOGING TO $LOGFILE"
 
 # backup directory
 BACKUP_DIR="/var/lib/jenkins-backup"
+set +u
+COMMIT_MESSAGE="\"[$(date)]'$1': backup $JENKINS_HOME on ami $AMI_ID \""
+set -u
+
 
 ## colors
 nocolor='\e[0m'
 green='\e[0;32m'
 red='\e[0;31m'
 blue='\e[0;34m'
+#
+echo  "LOGGING TO $LOGFILE"
+
+function check_repo() {
+# git repo set?
+if [[ "$GIT_REPO" == "" ]]; then
+  echo_red "ERROR: Missing repo "
+  usage
+fi
+# git account set?
+if [[ "$GIT_ACCOUNT" == "" ]]; then
+  echo_red "ERROR: Missing parameter"
+  usage
+fi
+# git repo existent?
+cd $BACKUP_DIR
+set +e
+GIT_STATUS=$(git status -s)
+set -e
+echo_green $GIT_STATUS
+if  [[  "$GIT_STATUS " == "" ]]; then
+  echo_red "ERROR: Directory $BACKUP_DIR is not under git control!"
+  echo_blue "Please initialize a git repo in $BACKUP_DIR"
+  echo -ne "${nocolor}"
+  exit -1
+fi
+}
 
 # echo in green
 function echo_green() { 
