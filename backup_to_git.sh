@@ -19,7 +19,16 @@ source $(dirname $0)/functions.sh
 
 check_repo
 echo_blue "Starting to backup Service Jenkins on AMI $AMI_ID"
-
+if [ $# -eq 0 ]; then
+  echo_blue "No commit message added, using: \'$COMMIT_MESSAGE\'"
+  echo -n "Using above commit message? [Y|n]"
+  read input
+  if [[ "$input" == "n" ]]; then
+     echo_blue" If you want a commit message type $0 \"MY COMMIT MESSAGE\""
+     echo_blue" Not doing nothing!"
+     echo_red " EXIT due to user input!"
+  fi
+fi
 # rsync to backup dir 
 syncToBackup
 
