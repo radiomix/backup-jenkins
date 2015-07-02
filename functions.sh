@@ -25,6 +25,7 @@ LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
 # backup directory
 BACKUP_DIR="/var/lib/jenkins-backup"
 set +u
+# add input argument to standard commit message
 COMMIT_MESSAGE="\"[$(date)]'$1': backup $JENKINS_HOME on ami $AMI_ID \""
 set -u
 
