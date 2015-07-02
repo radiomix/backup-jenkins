@@ -21,7 +21,7 @@ export AMI_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id/)
 
 # log file, base dir from /etc/default/jenkins
 LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
-echo_green "LOOGING TO $LOGFILE"
+echo "LOOGING TO $LOGFILE"
 
 # backup directory
 BACKUP_DIR="/var/lib/jenkins-backup"
