@@ -17,6 +17,18 @@ set -euo pipefail
 source /etc/default/jenkins
 source $(dirname $0)/functions.sh
 
+
+NO_ARGS=0
+E_OPTERROR=85
+
+if [ $# -eq "$NO_ARGS" ]
+then
+      echo "Usage: `basename $0` Commit Message"
+      echo "EXIT"
+      exit $E_OPTERROR
+
+fi
+exit
 check_repo
 echo_blue "Starting to backup Service Jenkins on AMI $AMI_ID"
 if [ $# -eq 0 ]; then
