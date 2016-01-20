@@ -28,7 +28,7 @@ then
       exit $E_OPTERROR
 
 fi
-exit
+
 check_repo
 echo_blue "Starting to backup Service Jenkins on AMI $AMI_ID"
 if [ $# -eq 0 ]; then
