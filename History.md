@@ -1,4 +1,10 @@
 
+0.2.0 / 201l-02-03 
+==================
+ * update docu to reflect BACKUP_DIR functionality
+ * chown -R jenkins:jenkins , update comments, change BACKUP_DIR
+
+
 0.1.9 / 2015-07-02 
 ==================
 
