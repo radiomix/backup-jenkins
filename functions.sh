@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 
+############################################
 ## common parameters/settings
 # Set script parameter
 GIT_REPO=test-repo
@@ -8,22 +9,28 @@ GIT_ACCOUNT=test-account
 GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="mkl@im7.de"
 
-
 ##
 ## for testing purpose, we let ubuntu do the git work,
 ## because ubuntu does have the credentials
 gitu='sudo -u ubuntu git '
-# if user jenkins has got the crendentials, out comment next line
+## if user jenkins has got the crendentials, out comment next line
 #gitu="sudo -u $JENKINS_USER git "
 
-# AMI id
+## AMI id
 export AMI_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id/)
 
-# log file, base dir from /etc/default/jenkins
+## log file, base dir from /etc/default/jenkins
 LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
 
-# backup directory
-BACKUP_DIR="/var/lib/jenkins-backup"
+##
+## the backup directory, should contain
+## a valid git repo with the changes
+#BACKUP_DIR="/var/lib/jenkins-backup"
+BACKUP_DIR="/home/ubuntu/jenkins-plugin-backup"
+############################################
+
+
+
 set +u
 # add input argument to standard commit message
 COMMIT_MESSAGE="\"[$(date)]'$1': backup $JENKINS_HOME on ami $AMI_ID \""
@@ -112,6 +119,7 @@ syncFromBackup() {
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
     echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $BACKUP_DIR/ $JENKINS_HOME )"
+    echo_gree "$(sudo chown -R jenkins:jenkins $JENKINS_HOME)"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
