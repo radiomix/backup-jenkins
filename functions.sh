@@ -9,6 +9,10 @@ GIT_ACCOUNT=test-account
 GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="mkl@im7.de"
 
+## exclude files from syncing
+# each pattern needs option "--exclude "
+RSYNC_EXCLUDE="--exclude '.git*' --exclude '.ssh*' --exclude '.bash*' --exclude 'jobs/*/builds*'"
+
 ##
 ## for testing purpose, we let ubuntu do the git work,
 ## because ubuntu does have the credentials
@@ -25,8 +29,8 @@ LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
 ##
 ## the backup directory, should contain
 ## a valid git repo with the changes
-#BACKUP_DIR="/var/lib/jenkins-backup"
-BACKUP_DIR="/home/ubuntu/jenkins-plugin-backup"
+BACKUP_DIR="/var/lib/jenkins-backup"
+#BACKUP_DIR="/home/ubuntu/jenkins-plugin-backup"
 ############################################
 
 
@@ -100,7 +104,7 @@ syncToBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-    echo_green "$(sudo rsync -avHx --chown=ubuntu:ubuntu --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $JENKINS_HOME/ $BACKUP_DIR )"
+    echo_green "$(sudo rsync -avHx --chown=ubuntu:ubuntu --delete $RSYNC_EXCLUDE $JENKINS_HOME/ $BACKUP_DIR )"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
@@ -118,7 +122,7 @@ syncFromBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
-    echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' $BACKUP_DIR/ $JENKINS_HOME )"
+    echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete $RSYNC_EXCLUDE $BACKUP_DIR/ $JENKINS_HOME )"
     echo_green "$(sudo chown -R jenkins:jenkins $JENKINS_HOME)"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
