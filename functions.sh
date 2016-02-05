@@ -26,6 +26,8 @@ LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
 ## the backup directory, should contain
 ## a valid git repo with the changes
 #BACKUP_DIR="/var/lib/jenkins-backup"
+# This is where Jenkins Plugin SCM-Sync-Config puts the git repo:
+# BACKUP_DIR="/var/lib/jenkins/scm-sync-configuration/checkoutConfiguration/"
 BACKUP_DIR="/home/ubuntu/build-im7-jenkins-config"
 ############################################
 
