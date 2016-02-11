@@ -25,10 +25,10 @@ LOGFILE=$(dirname $JENKINS_LOG)"/backup.log"
 ##
 ## the backup directory, should contain
 ## a valid git repo with the changes
-#BACKUP_DIR="/var/lib/jenkins-backup"
+BACKUP_DIR="/var/lib/jenkins-backup"
 # This is where Jenkins Plugin SCM-Sync-Config puts the git repo:
 # BACKUP_DIR="/var/lib/jenkins/scm-sync-configuration/checkoutConfiguration/"
-BACKUP_DIR="/home/ubuntu/build-im7-jenkins-config"
+#BACKUP_DIR="/home/ubuntu/build-im7-jenkins-config"
 ############################################
 
 
@@ -102,7 +102,8 @@ syncToBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-    echo_green "$(sudo rsync -avHx --chown=ubuntu:ubuntu --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' \
+#MKL     echo_green "$(sudo rsync -avHx --chown=ubuntu:ubuntu --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' \
+    echo_green "$(sudo rsync -avHx --chown=ubuntu:ubuntu --delete \
  --exclude '/jobs/*/builds/' $JENKINS_HOME/ $BACKUP_DIR)"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
@@ -121,7 +122,8 @@ syncFromBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
-    echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' \
+#MKL     echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' \
+    echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete \
  --exclude '/jobs/*/builds/' $BACKUP_DIR/ $JENKINS_HOME )"
     echo_green "$(sudo chown -R jenkins:jenkins $JENKINS_HOME)"
     echo_green "Starting Service Jenkins" 
