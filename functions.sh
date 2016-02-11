@@ -9,12 +9,17 @@ GIT_ACCOUNT=test-account
 GIT_USER="Jenkins Backup Script"
 GIT_EMAIL="mkl@im7.de"
 
+
+## get default values
+source /etc/default/jenkins
+
+
 ##
 ## for testing purpose, we let ubuntu do the git work,
 ## because ubuntu does have the credentials
-gitu='sudo -u ubuntu git '
+#gitu='sudo -u ubuntu git '
 ## if user jenkins has got the crendentials, out comment next line
-#gitu="sudo -u $JENKINS_USER git "
+gitu="sudo -u $JENKINS_USER git "
 
 ## AMI id
 export AMI_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id/)
@@ -102,8 +107,7 @@ syncToBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync to backup dir 
     echo_green "Syncing $JENKINS_HOME to $BACKUP_DIR"
-#MKL     echo_green "$(sudo rsync -avHx --chown=ubuntu:ubuntu --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' \
-    echo_green "$(sudo rsync -avHx --chown=ubuntu:ubuntu --delete \
+    echo_green "$(sudo rsync -avHx --chown=$JENKINS_USER:$JENKINS_USER --delete --safe-links --exclude '*.git*' \
  --exclude '/jobs/*/builds/' $JENKINS_HOME/ $BACKUP_DIR)"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
@@ -122,10 +126,9 @@ syncFromBackup() {
     echo_green "$(sudo service jenkins stop)"
     # rsync from backup dir
     echo_green "Syncing $JENKINS_HOME from $BACKUP_DIR"
-#MKL     echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete --exclude '*.git' --exclude '*.ssh' --exclude '.bash*' \
-    echo_green "$(sudo rsync -avHx --chown=jenkins:jenkins --delete \
+    echo_green "$(sudo rsync -avHx --chown=$JENKINS_USER:$JENKINS_USER --delete --safe-links  --exclude '*.git*' \
  --exclude '/jobs/*/builds/' $BACKUP_DIR/ $JENKINS_HOME )"
-    echo_green "$(sudo chown -R jenkins:jenkins $JENKINS_HOME)"
+    echo_green "$(sudo chown -R $JENKINS_USER:$JENKINS_USER $JENKINS_HOME)"
     echo_green "Starting Service Jenkins" 
     echo_green "$(sudo service jenkins start)"
   else 
